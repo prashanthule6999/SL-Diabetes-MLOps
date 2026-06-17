@@ -3,3 +3,15 @@ data_ingestion:
   data_url: "akshaydattatraykhare/diabetes-dataset"
   file_name: "diabetes.csv"
   raw_data_path: "./data"
+
+data_preprocessing:
+  test_size: 0.20
+  val_size: 0.25
+  random_state: 42
+  target_column: "Outcome"
+  columns:
+    - Glucose
+    - BloodPressure
+    - SkinThickness
+    - Insulin
+    - BMI

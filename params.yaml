@@ -15,3 +15,11 @@ data_preprocessing:
     - SkinThickness
     - Insulin
     - BMI
+  
+model_building:
+  target_column: "Outcome"
+  penalty: "l2"
+  solver: "liblinear"
+  C: 0.1
+  class_weight: ~
+  random_state: 42

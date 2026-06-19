@@ -18,7 +18,7 @@ def setup_mlflow(config):
     mode = config["mlflow"]["tracking_mode"]
 
     if mode == "local":
-        mlflow.set_tracking_uri("mlruns")
+        mlflow.set_tracking_uri("sqlite:///mlflow.db")
     elif mode == "dagshub":
 
         token = os.getenv("SL_DIABETES")
@@ -176,7 +176,7 @@ def main():
 
             # Log model to MLflow
             model_info = mlflow.sklearn.log_model(clf,
-                                                  artifact_path="model")
+                                                  name="model")
             #  serialization_format="skops",
             #  pip_requirements=[
             #         "scikit-learn==1.8.0",

@@ -145,6 +145,11 @@ def main():
 
         # saving both model as well as best threshold
         os.makedirs("models", exist_ok=True)
+
+        # The principle is :
+        # Train once → Save all learned transformations + model → Load the saved artifact for evaluation/inference.
+        # That's a production-friendly pattern because evaluation and deployment use the exact same trained artifact 
+        # rather than rebuilding preprocessing from code each time.
         save_artifacts(clf, best_threshold, 'models/model_artifact.pkl')
 
         logging.info(

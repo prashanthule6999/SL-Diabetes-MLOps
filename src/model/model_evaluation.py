@@ -139,8 +139,10 @@ def main():
 
     setup_mlflow(params)
 
+    print("Tracking URI:", mlflow.get_tracking_uri())
     with mlflow.start_run() as run:  # Start an MLflow run
         try:
+            logging.info("MLflow Run ID: %s", run.info.run_id)
             # load saved pipeline/model & threshold
             artifacts = load_artifacts("models/model_artifact.pkl")
             clf = artifacts["model"]
@@ -176,7 +178,7 @@ def main():
 
             # Log model to MLflow
             model_info = mlflow.sklearn.log_model(clf,
-                                                  name="model")
+                                                  artifact_path="model")
             #  serialization_format="skops",
             #  pip_requirements=[
             #         "scikit-learn==1.8.0",

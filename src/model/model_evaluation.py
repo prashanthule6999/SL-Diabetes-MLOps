@@ -9,6 +9,7 @@ import mlflow.sklearn
 from typing import Dict, Any
 from src.logger import logging
 from sklearn.pipeline import Pipeline
+from sklearn.metrics import confusion_matrix
 from src.data.data_ingestion import load_params
 from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score, f1_score
 
@@ -103,6 +104,18 @@ def evaluate_model(clf: Pipeline, best_threshold: float, X_test: pd.DataFrame, y
             'auc': roc_auc_score(y_test, test_prob)
         }
 
+        tn, fp, fn, tp = confusion_matrix(
+            y_test,
+            test_pred
+        ).ravel()
+
+        metrics_dict.update({
+            "tn": int(tn),
+            "fp": int(fp),
+            "fn": int(fn),
+            "tp": int(tp)
+        })
+
         logging.info('Model evaluation metrics calculated')
         return metrics_dict
     except Exception as e:
@@ -179,13 +192,6 @@ def main():
             # Log model to MLflow
             model_info = mlflow.sklearn.log_model(clf,
                                                   artifact_path="model")
-            #  serialization_format="skops",
-            #  pip_requirements=[
-            #         "scikit-learn==1.8.0",
-            #         "numpy==1.26.4",
-            #         "pandas==2.2.0",
-            #         "skops==0.13.0"
-            #     ])
 
             # Save model info
             save_model_info(run.info.run_id, model_info.model_uri,

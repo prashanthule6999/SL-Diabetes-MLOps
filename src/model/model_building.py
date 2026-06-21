@@ -52,7 +52,8 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series, penalty: str, solver:
         if y_train.isnull().sum() > 0:
             raise ValueError("Target variable contains missing values")
 
-        logging.info("NaNs in X_train: %s", X_train.isna().sum().sum())
+        logging.info("NaNs in X_train before imputation: %s",
+                     X_train.isna().sum().sum())
         logging.info("NaNs in y_train: %s", y_train.isna().sum())
 
         pipeline.fit(X_train, y_train)
@@ -68,9 +69,9 @@ def train_model(X_train: pd.DataFrame, y_train: pd.Series, penalty: str, solver:
         raise
 
 
-def get_best_threshold(clf, X_val: pd.DataFrame, y_val: pd.Series) -> float:
+def get_best_threshold(clf: Pipeline, X_val: pd.DataFrame, y_val: pd.Series) -> float:
 
-    # using Youden's J statistic for f
+    # using Youden's J statistic for threshold selection
     val_prob = clf.predict_proba(X_val)[:, 1]
 
     fpr, tpr, thresholds = roc_curve(y_val, val_prob)
@@ -133,24 +134,40 @@ def main():
         X_train = train_data.drop(columns=[target_column])
         y_train = train_data[target_column]
 
-        clf = train_model(X_train, y_train, penalty, solver,
-                          C, class_weight, random_state)
+        temp_clf = train_model(X_train, y_train, penalty, solver,
+                               C, class_weight, random_state)
 
-        # finding & saving best threshold
+        # finding & saving best threshold using validation set
         val_data = load_data('./data/interim/val_processed.csv')
         X_val = val_data.drop(columns=[target_column])
         y_val = val_data[target_column]
 
-        best_threshold = get_best_threshold(clf, X_val, y_val)
+        best_threshold = get_best_threshold(temp_clf, X_val, y_val)
+
+        # Combine train + validation for retraining
+        final_train_data = pd.concat(
+            [train_data, val_data],
+            ignore_index=True
+        )
+
+        # Features and target
+        X_train = final_train_data.drop(columns=[target_column])
+        y_train = final_train_data[target_column]
+
+        final_clf = train_model(X_train, y_train, penalty, solver,
+                                C, class_weight, random_state)
 
         # saving both model as well as best threshold
         os.makedirs("models", exist_ok=True)
 
         # The principle is :
         # Train once → Save all learned transformations + model → Load the saved artifact for evaluation/inference.
-        # That's a production-friendly pattern because evaluation and deployment use the exact same trained artifact 
+        # That's a production-friendly pattern because evaluation and deployment use the exact same trained artifact
         # rather than rebuilding preprocessing from code each time.
-        save_artifacts(clf, best_threshold, 'models/model_artifact.pkl')
+
+        # Final evaluation on the untouched test set
+        # is performed in model_evaluation.py
+        save_artifacts(final_clf, best_threshold, 'models/model_artifact.pkl')
 
         logging.info(
             "Saved threshold %.4f with trained model",

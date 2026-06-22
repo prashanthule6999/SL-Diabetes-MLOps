@@ -1,0 +1,109 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data/data_ingestion.py
+    deps:
+    - path: src/data/data_ingestion.py
+      hash: md5
+      md5: 83391379505ea12901db7efc12664570
+      size: 2798
+    params:
+      params.yaml:
+        data_ingestion.data_url: akshaydattatraykhare/diabetes-dataset
+        data_ingestion.file_name: diabetes.csv
+        data_ingestion.raw_data_path: ./data
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 3c6fc9c25fce8974359e6ff898d37314.dir
+      size: 24059
+      nfiles: 1
+  data_preprocessing:
+    cmd: python src/data/data_preprocessing.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 3c6fc9c25fce8974359e6ff898d37314.dir
+      size: 24059
+      nfiles: 1
+    - path: src/data/data_preprocessing.py
+      hash: md5
+      md5: 80ecec0c97fb220d5f3c45cc1c8a4f71
+      size: 2888
+    params:
+      params.yaml:
+        data_preprocessing.columns:
+        - Glucose
+        - BloodPressure
+        - SkinThickness
+        - Insulin
+        - BMI
+        data_preprocessing.random_state: 42
+        data_preprocessing.target_column: Outcome
+        data_preprocessing.test_size: 0.2
+        data_preprocessing.val_size: 0.25
+    outs:
+    - path: data/interim
+      hash: md5
+      md5: d36bb8c2be8e4f29b62bd02150dc3ec5.dir
+      size: 28443
+      nfiles: 3
+  model_building:
+    cmd: python src/model/model_building.py
+    deps:
+    - path: data/interim
+      hash: md5
+      md5: d36bb8c2be8e4f29b62bd02150dc3ec5.dir
+      size: 28443
+      nfiles: 3
+    - path: src/model/model_building.py
+      hash: md5
+      md5: 262138384783509319aea82118e4fc12
+      size: 6219
+    params:
+      params.yaml:
+        model_building.C: 0.1
+        model_building.class_weight:
+        model_building.penalty: l2
+        model_building.random_state: 42
+        model_building.solver: liblinear
+        model_building.target_column: Outcome
+    outs:
+    - path: models/model_artifact.pkl
+      hash: md5
+      md5: 604cd4d8820ca076cbe28c5ec161f7ab
+      size: 1880
+  model_evaluation:
+    cmd: python src/model/model_evaluation.py
+    deps:
+    - path: models/model_artifact.pkl
+      hash: md5
+      md5: 604cd4d8820ca076cbe28c5ec161f7ab
+      size: 1880
+    - path: src/model/model_evaluation.py
+      hash: md5
+      md5: bc3e279c0647506e4b913a85b2ed2e80
+      size: 7774
+    params:
+      params.yaml:
+        model_evaluation.target_column: Outcome
+    outs:
+    - path: reports/experiment_info.json
+      hash: md5
+      md5: d35e52438aaaa8b9b32bc2c9ce9b922e
+      size: 120
+    - path: reports/metrics.json
+      hash: md5
+      md5: 8a4e535380343b30a3cc4a93976a3a39
+      size: 241
+  model_registeration:
+    cmd: python src/model/model_registeration.py
+    deps:
+    - path: reports/experiment_info.json
+      hash: md5
+      md5: d35e52438aaaa8b9b32bc2c9ce9b922e
+      size: 120
+    - path: src/model/model_registeration.py
+      hash: md5
+      md5: 27f6617b750c1bb892da0cc8e6c6eb58
+      size: 3933

@@ -1,6 +1,6 @@
 {
     "model_name": "diabetes_prediction_model",
-    "version": 3,
-    "model_uri": "runs:/309766473d8447b9a223b2bcca0202e7/model",
+    "version": 4,
+    "model_uri": "runs:/922c0e17cc4248efb6f423be71b8a6a7/model",
     "alias": "staging"
 }

@@ -21,7 +21,7 @@ def setup_mlflow(config):
     mode = config["mlflow"]["tracking_mode"].lower()
 
     if mode == "local":
-        pass
+        mlflow.set_tracking_uri("file:./mlruns")
     elif mode == "dagshub":
 
         token = os.getenv("SL_DIABETES")

@@ -30,6 +30,7 @@ model_evaluation:
 mlflow:
   tracking_mode: "local"   # local | dagshub
   experiment_name: "my-dvc-diabetes-pipeline"
+  model_name: diabetes_prediction_model
 
   repo_owner: "prashanthule6999"
   repo_name: "SL-Diabetes-MLOps"

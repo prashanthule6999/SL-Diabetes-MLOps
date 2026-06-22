@@ -3,12 +3,14 @@ import os
 import json
 import mlflow
 import pickle
-import dagshub
+import warnings
+# import dagshub
 import pandas as pd
 import mlflow.sklearn
 from typing import Dict, Any
 from src.logger import logging
 from sklearn.pipeline import Pipeline
+from mlflow.models import infer_signature
 from sklearn.metrics import confusion_matrix
 from src.data.data_ingestion import load_params
 from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score, f1_score
@@ -16,10 +18,10 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_a
 
 def setup_mlflow(config):
 
-    mode = config["mlflow"]["tracking_mode"]
+    mode = config["mlflow"]["tracking_mode"].lower()
 
     if mode == "local":
-        mlflow.set_tracking_uri("sqlite:///mlflow.db")
+        pass
     elif mode == "dagshub":
 
         token = os.getenv("SL_DIABETES")
@@ -32,15 +34,21 @@ def setup_mlflow(config):
         os.environ["MLFLOW_TRACKING_USERNAME"] = token
         os.environ["MLFLOW_TRACKING_PASSWORD"] = token
 
-        dagshub.init(
-            repo_owner=config["mlflow"]["repo_owner"],
-            repo_name=config["mlflow"]["repo_name"],
-            mlflow=True
+        mlflow.set_tracking_uri(
+            config["mlflow"]["tracking_uri"]
+        )
+
+    else:
+        raise ValueError(
+            f"Invalid tracking mode: {mode}"
         )
 
     mlflow.set_experiment(
         config["mlflow"]["experiment_name"]
     )
+
+    logging.info("Tracking Mode: %s", mode)
+    logging.info("Tracking URI: %s", mlflow.get_tracking_uri())
 
 
 # def load_model(file_path: str):
@@ -152,9 +160,15 @@ def main():
 
     setup_mlflow(params)
 
-    print("Tracking URI:", mlflow.get_tracking_uri())
-    with mlflow.start_run() as run:  # Start an MLflow run
+    with mlflow.start_run(run_name="model_evaluation") as run:  # Start an MLflow run
         try:
+
+            mlflow.set_tags({
+                "stage": "evaluation",
+                "project": "diabetes_prediction",
+                "tracking_mode": params["mlflow"]["tracking_mode"]
+            })
+                        
             logging.info("MLflow Run ID: %s", run.info.run_id)
             # load saved pipeline/model & threshold
             artifacts = load_artifacts("models/model_artifact.pkl")
@@ -170,7 +184,6 @@ def main():
             metrics = evaluate_model(clf, best_threshold, X_test, y_test)
 
             os.makedirs("reports", exist_ok=True)
-            metrics["decision_threshold"] = best_threshold
             save_metrics(metrics, 'reports/metrics.json')
 
             # Log metrics to MLflow
@@ -189,9 +202,24 @@ def main():
                     clf.named_steps["model"].get_params()
                 )
 
+            warnings.filterwarnings(
+                "ignore",
+                message=".*Inferred schema contains integer column.*"
+            )
+                        
+            # logging signature
+            signature = infer_signature(
+                X_test,
+                clf.predict(X_test)
+            )
+
             # Log model to MLflow
-            model_info = mlflow.sklearn.log_model(clf,
-                                                  artifact_path="model")
+            model_info = mlflow.sklearn.log_model(
+                clf,
+                artifact_path="model",
+                signature=signature,
+                input_example=X_test.head(5)
+            )
 
             # Save model info
             save_model_info(run.info.run_id, model_info.model_uri,
@@ -205,10 +233,10 @@ def main():
                 artifact_path="inference_artifacts"
             )
 
-        except Exception as e:
-            logging.error(
-                'Failed to complete the model evaluation process: %s', e)
-            print(f"Error: {e}")
+        except Exception:
+            logging.exception(
+                'Failed to complete the model evaluation process')
+            raise
 
 
 if __name__ == '__main__':

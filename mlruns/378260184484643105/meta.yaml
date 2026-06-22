@@ -1,0 +1,6 @@
+artifact_location: file:///D:/Machine%20Learning/MLOPS/SL-Diabetes-MLOps/mlruns/378260184484643105
+creation_time: 1782135591927
+experiment_id: '378260184484643105'
+last_update_time: 1782135591927
+lifecycle_stage: active
+name: my-dvc-diabetes-pipeline

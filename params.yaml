@@ -28,8 +28,10 @@ model_evaluation:
   target_column: "Outcome"
 
 mlflow:
-  tracking_uri: "https://dagshub.com/prashanthule6999/SL-Diabetes-MLOps.mlflow"
-  experiment_name: "my-diabetes-pipeline"
-  tracking_mode: "local" #local,dagshub
+  tracking_mode: "local"   # local | dagshub
+  experiment_name: "my-dvc-diabetes-pipeline"
+
   repo_owner: "prashanthule6999"
   repo_name: "SL-Diabetes-MLOps"
+
+  tracking_uri: "https://dagshub.com/prashanthule6999/SL-Diabetes-MLOps.mlflow"

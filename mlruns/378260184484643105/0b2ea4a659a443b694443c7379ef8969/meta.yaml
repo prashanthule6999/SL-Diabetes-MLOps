@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Machine%20Learning/MLOPS/SL-Diabetes-MLOps/mlruns/378260184484643105/0b2ea4a659a443b694443c7379ef8969/artifacts
+end_time: 1782141312436
+entry_point_name: ''
+experiment_id: '378260184484643105'
+lifecycle_stage: active
+run_id: 0b2ea4a659a443b694443c7379ef8969
+run_name: model_evaluation
+run_uuid: 0b2ea4a659a443b694443c7379ef8969
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1782141288121
+status: 3
+tags: []
+user_id: User

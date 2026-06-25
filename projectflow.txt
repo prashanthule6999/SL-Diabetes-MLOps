@@ -48,8 +48,11 @@
 31. Add .github/workflows/ci.yaml file (before this make sure model_validation and fast validation is covered)
 
 32. Create key token on Dagshub for auth: Go to dagshub repo > Your settings > Tokens > Generate new token
-    >> Please make sure to save token << >> capstone_test: b6d6465c18a614187f15329009e6b916f9ac5cc7 <<
+    >> Please make sure to save token << >> SL_DIABETES: b6d6465c18a614187f15329009e6b916f9ac5cc7 <<
     >> Add this auth token to github secret&var and update on ci file
+    OR
+    If running locally then set 
+    $env:SL_DIABETES="<your_dagshub_token>" & using cmd verify echo $env:SL_DIABETES
 
 
 31. Add dir "tests"&"scripts" and files within. This will contain our test related scripts for CI.

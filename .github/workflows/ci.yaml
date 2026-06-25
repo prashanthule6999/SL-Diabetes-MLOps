@@ -31,6 +31,6 @@ jobs:
 
       - name: run pipeline
         env:
-          DAIBETES_TEST: ${{ secrets.DAIBETES_TEST }}
+          SL_DIABETES: ${{ secrets.SL_DIABETES }}
         run: |
           dvc repro

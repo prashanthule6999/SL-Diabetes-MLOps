@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h1>Diabetes Prediction System</h1>
+            <p>Enter patient information to predict diabetes risk.</p>
+        </div>
+
+        <form id="predictionForm">
+
+            <div class="form-group">
+                <label for="pregnancies">Pregnancies</label>
+                <input
+                    type="number"
+                    id="pregnancies"
+                    min="0"
+                    max="20"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="glucose">Glucose</label>
+                <input
+                    type="number"
+                    id="glucose"
+                    min="0"
+                    max="300"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="blood_pressure">Blood Pressure</label>
+                <input
+                    type="number"
+                    id="blood_pressure"
+                    min="0"
+                    max="200"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="skin_thickness">Skin Thickness</label>
+                <input
+                    type="number"
+                    id="skin_thickness"
+                    min="0"
+                    max="100"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="insulin">Insulin</label>
+                <input
+                    type="number"
+                    id="insulin"
+                    min="0"
+                    max="1000"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="bmi">BMI</label>
+                <input
+                    type="number"
+                    id="bmi"
+                    step="0.1"
+                    min="0"
+                    max="70"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="diabetes_pedigree_function">
+                    Diabetes Pedigree Function
+                </label>
+                <input
+                    type="number"
+                    id="diabetes_pedigree_function"
+                    step="0.001"
+                    min="0"
+                    max="3"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input
+                    type="number"
+                    id="age"
+                    min="1"
+                    max="120"
+                    required
+                >
+            </div>
+
+            <button type="submit">
+                Predict Diabetes Risk
+            </button>
+
+        </form>
+
+        <div id="result"></div>
+
+    </div>
+
+    <script>
+
+        document
+            .getElementById("predictionForm")
+            .addEventListener("submit", async function(e) {
+
+                e.preventDefault();
+
+                document.getElementById("result").innerHTML = `
+                    <div class="loading">
+                        Predicting...
+                    </div>
+                `;
+
+                const payload = {
+                    pregnancies: parseInt(document.getElementById("pregnancies").value),
+                    glucose: parseFloat(document.getElementById("glucose").value),
+                    blood_pressure: parseFloat(document.getElementById("blood_pressure").value),
+                    skin_thickness: parseFloat(document.getElementById("skin_thickness").value),
+                    insulin: parseFloat(document.getElementById("insulin").value),
+                    bmi: parseFloat(document.getElementById("bmi").value),
+                    diabetes_pedigree_function: parseFloat(
+                        document.getElementById("diabetes_pedigree_function").value
+                    ),
+                    age: parseInt(document.getElementById("age").value)
+                };
+
+                try {
+
+                    const response = await fetch("/predict", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    const predictionLabel =
+                        result.prediction === 1
+                            ? "Diabetic"
+                            : "Non-Diabetic";
+
+                    const cardClass =
+                        result.prediction === 1
+                            ? "risk-high"
+                            : "risk-low";
+
+                    const confidence =
+                        (result.confidence * 100).toFixed(2);
+
+                    const diabetesProb =
+                        (result.class_probabilities["Diabetes"] * 100).toFixed(2);
+
+                    const noDiabetesProb =
+                        (result.class_probabilities["No Diabetes"] * 100).toFixed(2);
+
+                    document.getElementById("result").innerHTML = `
+                        <div class="result-card ${cardClass}">
+
+                            <h2>Prediction Result</h2>
+
+                            <div class="result-row">
+                                <span>Status</span>
+                                <strong>${predictionLabel}</strong>
+                            </div>
+
+                            <div class="result-row">
+                                <span>Confidence</span>
+                                <strong>${confidence}%</strong>
+                            </div>
+
+                            <div class="result-row">
+                                <span>Diabetes Probability</span>
+                                <strong>${diabetesProb}%</strong>
+                            </div>
+
+                            <div class="result-row">
+                                <span>No Diabetes Probability</span>
+                                <strong>${noDiabetesProb}%</strong>
+                            </div>
+
+                            <div class="result-row">
+                                <span>Prediction Time</span>
+                                <strong>${new Date().toLocaleString()}</strong>
+                            </div>
+
+                        </div>
+                    `;
+
+                } catch (error) {
+
+                    document.getElementById("result").innerHTML = `
+                        <div class="error-card">
+                            Failed to get prediction.
+                        </div>
+                    `;
+                }
+            });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+/* ---------------------------
+   Global Styles
+---------------------------- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(
+        135deg,
+        #e8f4ff,
+        #f8fcff
+    );
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #1f2937;
+}
+
+/* ---------------------------
+   Main Container
+---------------------------- */
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 35px;
+    box-shadow:
+        0 10px 30px rgba(0, 92, 170, 0.08),
+        0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* ---------------------------
+   Header
+---------------------------- */
+
+.header {
+    text-align: center;
+    margin-bottom: 35px;
+    border-bottom: 2px solid #e5eef7;
+    padding-bottom: 20px;
+}
+
+.header h1 {
+    color: #005fa3;
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: #6b7280;
+    font-size: 15px;
+}
+
+/* ---------------------------
+   Form Section
+---------------------------- */
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #0f4c81;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #cfd8e3;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #fafcff;
+    transition: 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #0077cc;
+    box-shadow: 0 0 0 4px rgba(0, 119, 204, 0.12);
+}
+
+/* ---------------------------
+   Predict Button
+---------------------------- */
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: #0077cc;
+    color: white;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background: #005fa3;
+}
+
+button:active {
+    transform: scale(0.99);
+}
+
+/* ---------------------------
+   Loading
+---------------------------- */
+
+.loading {
+    margin-top: 25px;
+    text-align: center;
+    color: #0077cc;
+    font-weight: 600;
+}
+
+/* ---------------------------
+   Result Card
+---------------------------- */
+
+.result-card {
+    margin-top: 30px;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.05);
+}
+
+.result-card h2 {
+    margin-bottom: 20px;
+    color: #0f4c81;
+}
+
+/* ---------------------------
+   Risk States
+---------------------------- */
+
+.risk-high {
+    background: #fff3f3;
+    border-left: 7px solid #dc2626;
+}
+
+.risk-low {
+    background: #f0fff4;
+    border-left: 7px solid #16a34a;
+}
+
+/* ---------------------------
+   Result Rows
+---------------------------- */
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.result-row:last-child {
+    border-bottom: none;
+}
+
+.result-row span {
+    color: #4b5563;
+}
+
+.result-row strong {
+    color: #111827;
+}
+
+/* ---------------------------
+   Error Card
+---------------------------- */
+
+.error-card {
+    margin-top: 20px;
+    background: #fff0f0;
+    border-left: 6px solid #dc2626;
+    padding: 16px;
+    border-radius: 10px;
+    color: #991b1b;
+    font-weight: 600;
+}
+
+/* ---------------------------
+   Hospital Badge
+---------------------------- */
+
+.header::before {
+    content: "🏥";
+    display: block;
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+/* ---------------------------
+   Responsive
+---------------------------- */
+
+@media (max-width: 768px) {
+
+    .container {
+        padding: 20px;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .result-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+}

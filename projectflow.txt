@@ -21,15 +21,15 @@
 15. create a local folder as "local_s3" (temporary work)
 16. on terminal - "dvc remote add -d mylocal local_s3" & check using dvc remote list
 
-17. Add code to below files/folders inside src dir:
+17. Add code to below files/folders inside src dir (Build Pipeline):
     - logger
     - data_ingestion.py
     - data_preprocessing.py
     - feature_engineering.py
     - model_building.py
     - model_evaluation.py
-    - register_model.py
-18. add file - dvc.yaml (till model evaluation.metrics)
+    - model_registeration.py
+18. add file - dvc.yaml (Automate the pipeline till model registeration)
 19. add file - params.yaml
 20. DVC pipeline is ready to run - dvc repro
 
@@ -41,11 +41,11 @@
 21. Once do - dvc status - commit - push
 22. git add - commit - push
 
-28. Create new dir - flask_app | Inside that, add rest of the files and dir
-29. pip install flask and run the app (dvc push - to push data to S3)
+28. Create new dir - fastapi | Inside that, add rest of the files and dir
+29. pip install fastapi[standard] and run the app (dvc push - to push data to S3)
 
 30. pip freeze > requirements.txt
-31. Add .github/workflows/ci.yaml file
+31. Add .github/workflows/ci.yaml file (before this make sure model_validation and fast validation is covered)
 
 32. Create key token on Dagshub for auth: Go to dagshub repo > Your settings > Tokens > Generate new token
     >> Please make sure to save token << >> capstone_test: b6d6465c18a614187f15329009e6b916f9ac5cc7 <<

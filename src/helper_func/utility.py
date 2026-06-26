@@ -3,6 +3,7 @@ import yaml
 import mlflow
 import pandas as pd
 from typing import Any
+from pathlib import Path
 from src.logger import logging
 
 def load_params(params_path: str) -> dict[str, Any]:
@@ -41,7 +42,10 @@ def setup_mlflow(config):
     mode = config["mlflow"]["tracking_mode"].lower()
 
     if mode == "local":
-        mlflow.set_tracking_uri("file:./mlruns")
+        
+        ROOT_DIR = Path(__file__).resolve().parent.parent
+        mlflow.set_tracking_uri(f"file:{ROOT_DIR / 'mlruns'}")
+        
     elif mode == "dagshub":
 
         token = os.getenv("SL_DIABETES")

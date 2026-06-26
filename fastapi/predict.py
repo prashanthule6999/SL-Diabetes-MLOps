@@ -3,15 +3,17 @@
 # performs predictions in a thread-safe way.
 # ------------------------------------------------------------------------------
 import mlflow  # loads model from MLflow Model Registry
-from mlflow import MlflowClient
 import logging
 import pandas as pd  # converts input data into DataFrame
-# prevents multiple threads from loading model simultaneously.
-from threading import Lock
+from pathlib import Path
+from mlflow import MlflowClient
+from threading import Lock # prevents multiple threads from loading model simultaneously.
 from src.helper_func.utility import load_params, setup_mlflow
 
 
-params = load_params("params.yaml")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+params = load_params(ROOT_DIR / "params.yaml")
 setup_mlflow(params)
 
 

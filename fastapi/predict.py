@@ -8,10 +8,11 @@ import logging
 import pandas as pd  # converts input data into DataFrame
 # prevents multiple threads from loading model simultaneously.
 from threading import Lock
+from src.helper_func.utility import load_params, setup_mlflow
 
-mlflow.set_tracking_uri(
-    "file:///D:/Machine Learning/MLOPS/SL-Diabetes-MLOps/mlruns"
-)
+
+params = load_params("params.yaml")
+setup_mlflow(params)
 
 
 # ------------------------------------------------------------------------------

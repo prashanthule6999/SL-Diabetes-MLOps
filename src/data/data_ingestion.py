@@ -1,32 +1,12 @@
 # data ingestion
 
-import yaml
 import kagglehub
 import pandas as pd
-from typing import Any
 from pathlib import Path
 from src.logger import logging
+from src.helper_func.utility import load_params
 
-
-def load_params(params_path: str) -> dict[str, Any]:
-    """Load parameters from a YAML file."""
-    try:
-        with open(params_path, 'r') as file:
-            params = yaml.safe_load(file)
-        logging.debug('Parameters retrieved from %s', params_path)
-        return params
-    except FileNotFoundError:
-        logging.error('File not found: %s', params_path)
-        raise
-    except yaml.YAMLError as e:
-        logging.error('YAML error: %s', e)
-        raise
-    except Exception as e:
-        logging.error('Unexpected error: %s', e)
-        raise
-
-
-def load_data(data_url: str, file_name: str) -> pd.DataFrame:
+def load_data_from_external_src(data_url: str, file_name: str) -> pd.DataFrame:
     """Load data from kaggle site."""
     try:
         path = Path(kagglehub.dataset_download(data_url))
@@ -87,7 +67,7 @@ def main() -> None:
         file_name = params["data_ingestion"]['file_name']
         raw_data_path = params["data_ingestion"]["raw_data_path"]
 
-        df = load_data(
+        df = load_data_from_external_src(
             data_url, file_name)
 
         save_data(df, file_name, raw_data_path)

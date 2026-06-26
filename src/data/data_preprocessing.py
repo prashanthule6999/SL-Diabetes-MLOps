@@ -5,9 +5,8 @@ import numpy as np
 import pandas as pd
 from typing import Tuple
 from src.logger import logging
-from src.data.data_ingestion import load_params
 from sklearn.model_selection import train_test_split
-
+from src.helper_func.utility import load_params, load_data_from_csv
 
 def replace_invalid_zeros(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
     df = df.copy()
@@ -39,8 +38,7 @@ def train_val_test_split(raw_cleaned_data: pd.DataFrame, test_size: float, val_s
 def main() -> None:
     try:
         # Fetch the data from data/raw
-        raw_data = pd.read_csv('./data/raw/diabetes.csv')
-        logging.info('raw data loaded properly')
+        raw_data = load_data_from_csv('./data/raw/diabetes.csv')
 
         params = load_params('params.yaml')
 

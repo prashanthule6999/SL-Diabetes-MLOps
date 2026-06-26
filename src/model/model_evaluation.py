@@ -4,7 +4,6 @@ import json
 import mlflow
 import pickle
 import warnings
-# import dagshub
 import pandas as pd
 import mlflow.sklearn
 from typing import Dict, Any
@@ -12,59 +11,9 @@ from src.logger import logging
 from sklearn.pipeline import Pipeline
 from mlflow.models import infer_signature
 from sklearn.metrics import confusion_matrix
-from src.data.data_ingestion import load_params
+from src.helper_func.utility import load_params, load_data_from_csv, setup_mlflow
 from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score, f1_score
 
-
-def setup_mlflow(config):
-
-    mode = config["mlflow"]["tracking_mode"].lower()
-
-    if mode == "local":
-        mlflow.set_tracking_uri("file:./mlruns")
-    elif mode == "dagshub":
-
-        token = os.getenv("SL_DIABETES")
-
-        if not token:
-            raise EnvironmentError(
-                "SL_DIABETES environment variable is not set"
-            )
-
-        os.environ["MLFLOW_TRACKING_USERNAME"] = token
-        os.environ["MLFLOW_TRACKING_PASSWORD"] = token
-
-        mlflow.set_tracking_uri(
-            config["mlflow"]["tracking_uri"]
-        )
-
-    else:
-        raise ValueError(
-            f"Invalid tracking mode: {mode}"
-        )
-
-    mlflow.set_experiment(
-        config["mlflow"]["experiment_name"]
-    )
-
-    logging.info("Tracking Mode: %s", mode)
-    logging.info("Tracking URI: %s", mlflow.get_tracking_uri())
-
-
-# def load_model(file_path: str):
-#     """Load the trained model from a file."""
-#     try:
-#         with open(file_path, 'rb') as file:
-#             model = pickle.load(file)
-#         logging.info('Model loaded from %s', file_path)
-#         return model
-#     except FileNotFoundError:
-#         logging.error('File not found: %s', file_path)
-#         raise
-#     except Exception as e:
-#         logging.error(
-#             'Unexpected error occurred while loading the model: %s', e)
-#         raise
 
 def load_artifacts(file_path: str) -> Dict[str, Any]:
     """Load the artifacts(model, threshold) from a file."""
@@ -80,21 +29,6 @@ def load_artifacts(file_path: str) -> Dict[str, Any]:
     except Exception as e:
         logging.error(
             'Unexpected error occurred while loading the artifacts: %s', e)
-        raise
-
-
-def load_data(file_path: str) -> pd.DataFrame:
-    """Load data from a CSV file."""
-    try:
-        df = pd.read_csv(file_path)
-        logging.info('Data loaded from %s', file_path)
-        return df
-    except pd.errors.ParserError as e:
-        logging.error('Failed to parse the CSV file: %s', e)
-        raise
-    except Exception as e:
-        logging.error(
-            'Unexpected error occurred while loading the data: %s', e)
         raise
 
 
@@ -177,7 +111,7 @@ def main():
 
             target_column = params["model_evaluation"]['target_column']
 
-            test_data = load_data('./data/interim/test_processed.csv')
+            test_data = load_data_from_csv('./data/interim/test_processed.csv')
             X_test = test_data.drop(columns=[target_column])
             y_test = test_data[target_column]
 

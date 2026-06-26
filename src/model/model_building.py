@@ -8,28 +8,12 @@ import pandas as pd
 from typing import Optional
 from src.logger import logging
 from sklearn.pipeline import Pipeline
+from sklearn.metrics import roc_curve
 from sklearn.impute import SimpleImputer
-from src.data.data_ingestion import load_params
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_curve
-
+from src.helper_func.utility import load_params, load_data_from_csv
 warnings.filterwarnings("ignore")
-
-
-def load_data(file_path: str) -> pd.DataFrame:
-    """Load data from a CSV file."""
-    try:
-        df = pd.read_csv(file_path)
-        logging.info('Data loaded from %s', file_path)
-        return df
-    except pd.errors.ParserError as e:
-        logging.error('Failed to parse the CSV file: %s', e)
-        raise
-    except Exception as e:
-        logging.error(
-            'Unexpected error occurred while loading the data: %s', e)
-        raise
 
 
 def train_model(X_train: pd.DataFrame, y_train: pd.Series, penalty: str, solver: str, C: float, class_weight: Optional[str], random_state: int) -> Pipeline:
@@ -87,17 +71,6 @@ def get_best_threshold(clf: Pipeline, X_val: pd.DataFrame, y_val: pd.Series) -> 
     return best_threshold
 
 
-# def save_model(model: Pipeline, file_path: str) -> None:
-#     """Save the trained model to a file."""
-#     try:
-#         with open(file_path, 'wb') as file:
-#             pickle.dump(model, file)
-#         logging.info('Model saved to %s', file_path)
-#         # logging.info("Model parameters: %s", model.get_params())
-#     except Exception as e:
-#         logging.error('Error occurred while saving the model: %s', e)
-#         raise
-
 def save_artifacts(clf: Pipeline,  best_threshold: float, file_path: str) -> None:
     """Save the trained model & best threshold to a file."""
     try:
@@ -127,7 +100,7 @@ def main():
         random_state = params["model_building"]['random_state']
 
         # model training
-        train_data = load_data('./data/interim/train_processed.csv')
+        train_data = load_data_from_csv('./data/interim/train_processed.csv')
 
         # X_train = train_data.iloc[:, :-1]
         # y_train = train_data.iloc[:, -1]
@@ -138,7 +111,7 @@ def main():
                                C, class_weight, random_state)
 
         # finding & saving best threshold using validation set
-        val_data = load_data('./data/interim/val_processed.csv')
+        val_data = load_data_from_csv('./data/interim/val_processed.csv')
         X_val = val_data.drop(columns=[target_column])
         y_val = val_data[target_column]
 

@@ -1,50 +1,14 @@
 # register model
 
-from src.data.data_ingestion import load_params
 import json
 import time
 import os
 import mlflow
-# import dagshub
 import warnings
 from src.logger import logging
 warnings.filterwarnings("ignore")
 warnings.simplefilter("ignore", UserWarning)
-
-
-def setup_mlflow(config):
-
-    mode = config["mlflow"]["tracking_mode"].lower()
-
-    if mode == "local":
-        mlflow.set_tracking_uri("file:./mlruns")
-    elif mode == "dagshub":
-
-        token = os.getenv("SL_DIABETES")
-
-        if not token:
-            raise EnvironmentError(
-                "SL_DIABETES environment variable is not set"
-            )
-
-        os.environ["MLFLOW_TRACKING_USERNAME"] = token
-        os.environ["MLFLOW_TRACKING_PASSWORD"] = token
-
-        mlflow.set_tracking_uri(
-            config["mlflow"]["tracking_uri"]
-        )
-
-    else:
-        raise ValueError(
-            f"Invalid tracking mode: {mode}"
-        )
-
-    mlflow.set_experiment(
-        config["mlflow"]["experiment_name"]
-    )
-
-    logging.info("Tracking Mode: %s", mode)
-    logging.info("Tracking URI: %s", mlflow.get_tracking_uri())
+from src.helper_func.utility import load_params, setup_mlflow
 
 
 def load_model_info(file_path: str) -> dict:

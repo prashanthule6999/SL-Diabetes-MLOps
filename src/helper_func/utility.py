@@ -41,9 +41,9 @@ def setup_mlflow(config):
 
     mode = config["mlflow"]["tracking_mode"].lower()
 
-    if mode == "local":
+    if mode == "local":        
         
-        ROOT_DIR = Path(__file__).resolve().parent.parent
+        ROOT_DIR = Path(__file__).resolve().parent.parent.parent
         mlflow.set_tracking_uri(f"file:{ROOT_DIR / 'mlruns'}")
         
     elif mode == "dagshub":

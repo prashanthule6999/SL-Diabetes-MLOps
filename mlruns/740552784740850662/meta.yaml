@@ -1,0 +1,6 @@
+artifact_location: file:D:\Machine Learning\MLOPS\SL-Diabetes-MLOps\mlruns/740552784740850662
+creation_time: 1782561808937
+experiment_id: '740552784740850662'
+last_update_time: 1782561808937
+lifecycle_stage: active
+name: LR-Diabetes-Pipeline

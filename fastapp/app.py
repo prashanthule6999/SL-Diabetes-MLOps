@@ -3,15 +3,15 @@ import logging
 from pathlib import Path
 from fastapi import Request
 from fastapi.responses import Response
-from schema.user_input import User_Input
+from fastapp.schema.user_input import User_Input
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from fastapi.staticfiles import StaticFiles
 from prometheus_client import generate_latest
 from fastapi.templating import Jinja2Templates
-from schema.prediction_response import Prediction_Response
-from predict import load_model, predict_output, get_model_version
-from metrics import MODEL_INFO, MODEL_LOADED, PREDICTION_REQUESTS, PREDICTION_SUCCESS, PREDICTION_FAILURE, PREDICTION_RESULT, PREDICTION_LATENCY
+from fastapp.schema.prediction_response import Prediction_Response
+from fastapp.predict import load_model, predict_output, get_model_version
+from fastapp.metrics import MODEL_INFO, MODEL_LOADED, PREDICTION_REQUESTS, PREDICTION_SUCCESS, PREDICTION_FAILURE, PREDICTION_RESULT, PREDICTION_LATENCY
 
 
 # ------------------------------------------------------------------------------

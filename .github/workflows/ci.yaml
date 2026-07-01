@@ -45,8 +45,8 @@ jobs:
           SL_DIABETES: ${{ secrets.SL_DIABETES }}
         run: python scripts/promote_model.py
 
-      - name: Run Flask app tests
+      - name: Run fast app tests
         if: success()
         env:
           SL_DIABETES: ${{ secrets.SL_DIABETES }}
-        run: python -m unittest tests/test_flask_app.py
+        run: python -m unittest tests/test_fast_app.py

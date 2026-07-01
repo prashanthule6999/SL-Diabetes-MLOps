@@ -29,7 +29,7 @@ logging.basicConfig(
 # Model Configuration
 # ------------------------------------------------------------------------------
 MODEL_NAME = params["mlflow"]["model_name"]
-MODEL_ALIAS = "staging"
+MODEL_ALIAS = "production"
 MODEL_URI = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"
 model = None
 model_lock = Lock()

@@ -28,7 +28,7 @@ logging.basicConfig(
 # ------------------------------------------------------------------------------
 # Model Configuration
 # ------------------------------------------------------------------------------
-MODEL_NAME = "diabetes_prediction_model"
+MODEL_NAME = params["mlflow"]["model_name"]
 MODEL_ALIAS = "staging"
 MODEL_URI = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"
 model = None

@@ -13,7 +13,7 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11.15'
+          python-version: "3.11.15"
 
       - name: Cache pip dependencies
         uses: actions/cache@v4
@@ -32,3 +32,21 @@ jobs:
           SL_DIABETES: ${{ secrets.SL_DIABETES }}
         run: |
           dvc repro
+
+      - name: Run model tests
+        env:
+          SL_DIABETES: ${{ secrets.SL_DIABETES }}
+        run: |
+          python -m unittest tests/test_model.py
+
+      - name: Promote model to production
+        if: success()
+        env:
+          SL_DIABETES: ${{ secrets.SL_DIABETES }}
+        run: python scripts/promote_model.py
+
+      - name: Run Flask app tests
+        if: success()
+        env:
+          SL_DIABETES: ${{ secrets.SL_DIABETES }}
+        run: python -m unittest tests/test_flask_app.py

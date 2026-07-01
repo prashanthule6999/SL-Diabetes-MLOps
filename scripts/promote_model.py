@@ -1,46 +1,70 @@
-# promote model
-
-import os
 import mlflow
+from src.logger import logging
+from mlflow import MlflowClient
+from src.helper_func.utility import load_params, setup_mlflow
+
 
 def promote_model():
-    # Set up DagsHub credentials for MLflow tracking
-    dagshub_token = os.getenv("CAPSTONE_TEST")
-    if not dagshub_token:
-        raise EnvironmentError("CAPSTONE_TEST environment variable is not set")
+    """
+    Promote the validated staging model to production.
 
-    os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
-    os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+    Workflow:
+    1. Get model version assigned to 'staging' alias.
+    2. Point 'production' alias to the same version.
+    3. Remove the 'staging' alias.
+    """
 
-    dagshub_url = "https://dagshub.com"
-    repo_owner = "prashanthule6999"
-    repo_name = "YT-Capstone-Project"
+    try:
+        # Configure MLflow
+        params = load_params("params.yaml")
+        setup_mlflow(params)
 
-    # Set up MLflow tracking URI
-    mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
+        client = MlflowClient()
+        model_name = params["mlflow"]["model_name"]
 
-    client = mlflow.MlflowClient()
+        logging.info("Fetching model assigned to 'staging' alias...")
 
-    model_name = "my_model"
-    # Get the latest version in staging
-    latest_version_staging = client.get_latest_versions(model_name, stages=["Staging"])[0].version
-
-    # Archive the current production model
-    prod_versions = client.get_latest_versions(model_name, stages=["Production"])
-    for version in prod_versions:
-        client.transition_model_version_stage(
+        # Get the model version currently assigned to the staging alias
+        staging_model = client.get_model_version_by_alias(
             name=model_name,
-            version=version.version,
-            stage="Archived"
+            alias="staging"
         )
 
-    # Promote the new model to production
-    client.transition_model_version_stage(
-        name=model_name,
-        version=latest_version_staging,
-        stage="Production"
-    )
-    print(f"Model version {latest_version_staging} promoted to Production")
+        version = staging_model.version
+
+        logging.info(
+            f"Model '{model_name}' version {version} found with alias 'staging'."
+        )
+
+        # Assign production alias
+        client.set_registered_model_alias(
+            name=model_name,
+            alias="production",
+            version=version
+        )
+
+        logging.info(
+            f"'production' alias assigned to version {version}."
+        )
+
+        # Remove staging alias
+        client.delete_registered_model_alias(
+            name=model_name,
+            alias="staging"
+        )
+
+        logging.info(
+            f"'staging' alias removed from version {version}."
+        )
+
+        logging.info(
+            f"Model '{model_name}' version {version} successfully promoted to Production."
+        )
+
+    except Exception as e:
+        logging.exception(f"Model promotion failed: {e}")
+        raise
+
 
 if __name__ == "__main__":
     promote_model()

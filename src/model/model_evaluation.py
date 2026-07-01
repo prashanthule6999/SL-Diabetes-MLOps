@@ -106,7 +106,7 @@ def main():
             logging.info("MLflow Run ID: %s", run.info.run_id)
             # load saved pipeline/model & threshold
             artifacts = load_artifacts("models/model_artifact.pkl")
-            clf = artifacts["model"]
+            pipeline = artifacts["model"]
             best_threshold = artifacts["threshold"]
 
             target_column = params["model_evaluation"]['target_column']
@@ -115,7 +115,7 @@ def main():
             X_test = test_data.drop(columns=[target_column])
             y_test = test_data[target_column]
 
-            metrics = evaluate_model(clf, best_threshold, X_test, y_test)
+            metrics = evaluate_model(pipeline, best_threshold, X_test, y_test)
 
             os.makedirs("reports", exist_ok=True)
             save_metrics(metrics, 'reports/metrics.json')
@@ -126,14 +126,14 @@ def main():
             mlflow.log_metrics(metrics)
 
             # Log model parameters to MLflow
-            if hasattr(clf, 'get_params'):
+            if hasattr(pipeline, 'get_params'):
                 # params = clf.get_params()
                 # for param_name, param_value in params.items():
                 #     mlflow.log_param(param_name, param_value)
                 # mlflow.log_params(clf.get_params())
                 mlflow.log_param("decision_threshold", best_threshold)
                 mlflow.log_params(
-                    clf.named_steps["model"].get_params()
+                    pipeline.named_steps["model"].get_params()
                 )
 
             warnings.filterwarnings(
@@ -144,12 +144,12 @@ def main():
             # logging signature
             signature = infer_signature(
                 X_test,
-                clf.predict(X_test)
+                pipeline.predict(X_test)
             )
 
             # Log model to MLflow
             model_info = mlflow.sklearn.log_model(
-                clf,
+                pipeline,
                 artifact_path="model",
                 signature=signature,
                 input_example=X_test.head(5)

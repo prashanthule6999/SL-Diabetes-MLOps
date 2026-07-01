@@ -82,8 +82,8 @@ stages:
       size: 1880
     - path: src/model/model_evaluation.py
       hash: md5
-      md5: 803455b155099c846775c0736d55d2fa
-      size: 5997
+      md5: f4489c84829489a497df6df501e61f9d
+      size: 6027
     params:
       params.yaml:
         model_evaluation.target_column: Outcome

@@ -48,7 +48,7 @@
 31. Add .github/workflows/ci.yaml file (before this make sure model_validation and fast validation is covered)
 
 32. Create key token on Dagshub for auth: Go to dagshub repo > Your settings > Tokens > Generate new token
-    >> Please make sure to save token << >> SL_DIABETES: b6d6465c18a614187f15329009e6b916f9ac5cc7 <<
+    >> Please make sure to save token << >> SL_DIABETES: f7133759d8509786041983c5425152c2dc0665cd <<
     >> Add this auth token to github secret&var and update on ci file
     OR
     If running locally then set 
@@ -62,11 +62,11 @@
 33. cd flask_app & do "pipreqs . --force"
 34. Add dockerfile and start docker-desktop in background
     Also before proceeding make sure: [switch the mlflow server setup to param version, change cmd on dockerfile]
-35. go to root dir and: "docker build -t capstone-app:latest ."
-36. Try running the image: "docker run -p 8888:5000 capstone-app:latest"
-    - This run will give 'OSError: capstone_test environment variable is not set'...obviously
-    - alternate: docker run -p 8888:5000 -e CAPSTONE_TEST=b6d6465c18a614187f15329009e6b916f9ac5cc7 capstone-app:latest
-    - docker push youruser/capstone-app:latest (optional)
+35. go to root dir and: "docker build -t sl_diabetes:latest ."
+36. Try running the image: "docker run -p 8888:5000 sl_diabetes:latest"
+    - This run will give 'OSError: SL_DIABETES environment variable is not set'...obviously
+    - alternate: docker run -p 8888:5000 -e SL_DIABETES=f7133759d8509786041983c5425152c2dc0665cd sl_diabetes:latest
+    - docker push youruser/sl_diabetes:latest (optional)
     - optional: try to delete image locally and pull it from dockerhub and run (optional)
 
 37. Setup aws services for below secrets and variables:

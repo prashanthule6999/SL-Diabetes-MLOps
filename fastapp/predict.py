@@ -2,20 +2,31 @@
 # This code is a model-serving utility that loads the latest MLflow registered model and
 # performs predictions in a thread-safe way.
 # ------------------------------------------------------------------------------
+import os
 import mlflow  # loads model from MLflow Model Registry
 import logging
 import pandas as pd  # converts input data into DataFrame
-from pathlib import Path
+from threading import Lock # prevents multiple threads from loading model simultaneously
 from mlflow import MlflowClient
-from threading import Lock # prevents multiple threads from loading model simultaneously.
-from src.helper_func.utility import load_params, setup_mlflow
 
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+# Below code block is for production use
+# -------------------------------------------------------------------------------------
+# Set up DagsHub credentials for MLflow tracking
+# -------------------------------------------------------------------------------------
 
-params = load_params(ROOT_DIR / "params.yaml")
-setup_mlflow(params)
+dagshub_token = os.getenv("SL_DIABETES")
+if not dagshub_token:
+    raise EnvironmentError("SL_DIABETES environment variable is not set")
 
+os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_token
+os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
+
+dagshub_url = "https://dagshub.com"
+repo_owner = "prashanthule6999"
+repo_name = "SL-Diabetes-MLOps"
+
+mlflow.set_tracking_uri(f'{dagshub_url}/{repo_owner}/{repo_name}.mlflow')
 
 # ------------------------------------------------------------------------------
 # Logging
@@ -28,7 +39,7 @@ logging.basicConfig(
 # ------------------------------------------------------------------------------
 # Model Configuration
 # ------------------------------------------------------------------------------
-MODEL_NAME = params["mlflow"]["model_name"]
+MODEL_NAME = "diabetes_prediction_model"
 MODEL_ALIAS = "production"
 MODEL_URI = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"
 model = None

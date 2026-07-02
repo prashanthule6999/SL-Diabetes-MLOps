@@ -1,5 +1,6 @@
 import time
 import logging
+import uvicorn
 from pathlib import Path
 from fastapi import Request
 from fastapi.responses import Response
@@ -173,4 +174,12 @@ def metrics():
     return Response(
         content=generate_latest(),
         media_type="text/plain"
+    )
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=5000
     )

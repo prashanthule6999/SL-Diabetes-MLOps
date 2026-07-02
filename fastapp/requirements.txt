@@ -1,0 +1,9 @@
+auto_mix_prep==0.2.0
+fastapi==0.138.2
+fastapp==0.1.7
+mlflow==2.22.1
+mlflow_skinny==2.22.1
+mlflow_tracing==3.13.0
+pandas==2.3.3
+prometheus_client==0.25.0
+pydantic==2.13.4
